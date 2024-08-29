@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  # Service to run the Rasa server
+  rasa:
+    build: .
+    volumes:
+      - ./:/app  # Mount the current directory to /app inside the container
+    ports:
+      - 5005:5005  # Expose port 5005 for Rasa server
+    command: run -m /app/models --enable-api --cors * --debug --endpoints endpoints.yml
+    environment:
+      - RASA_ENV=local
+    stdin_open: true
+    tty: true
