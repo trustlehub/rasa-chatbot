@@ -6,6 +6,7 @@ function App() {
     const [socket, setSocket] = useState()
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+    const rasaUrl = document.querySelector("#Chatbot").getAttribute('data-rasa-rest-url');
     useEffect(() => {
 
         // const s = io.connect(
@@ -20,7 +21,7 @@ function App() {
             from: 'user',
             message: input
         }]);
-        const r = await fetch('http://localhost:5005/webhooks/rest/webhook', {
+        const r = await fetch(rasaUrl, {
             method: 'POST',
             body: JSON.stringify({
                 sender: 'test_user',
