@@ -11,7 +11,7 @@ function IntentHeaders({icon, text}: { icon: any, text: string }) {
         {icon}
         <span className={'whitespace-nowrap ml-3'}>{text}</span>
         <div className={'flex justify-end w-full'}>
-            <ArrowRight width={26} height={26}/>
+            <ArrowRight width={26} height={26} fill={'black'}/>
         </div>
     </div>
 }

@@ -21,7 +21,7 @@ function IntentSelection() {
                 <ChatIcon width={60} height={60} className={'mr-3'}/>
             } text={"Find person or business"}/>
             <IntentHeaders icon={
-                <LeafIcon width={45} height={45} className={'mr-3'}/>
+                <LeafIcon width={40} height={60} className={'mr-3'}/>
             } text={"Other"}/>
         </div>
     </div>

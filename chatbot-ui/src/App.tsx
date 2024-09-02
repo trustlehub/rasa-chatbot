@@ -13,16 +13,31 @@ import CloseIcon from "./icons/Close";
 import RobotIcon from "./icons/Robot";
 import Header from "./components/Header";
 import {Outlet} from "react-router-dom";
+import AssistantIcon from "./icons/Assistant";
 
 
 function App() {
-    return (
-        <div className="flex relative flex-col h-full w-full bg-white rounded-xl overflow-hidden shadow-xl">
-            <Header/>
+    const [expanded, setExpanded] = useState(false)
+    const [open, setOpen] = useState(false)
+    if (open) {
+
+        return <div
+            className={`flex  flex-col h-[75vh] min-w-[400px] transition-all ease-in-out ${expanded ? "w-1/2" : "w-1/3"} fixed right-0 bottom-0 m-8 bg-white rounded-xl overflow-hidden shadow-xl`}
+        >
+            <Header
+                setExpanded={() => setExpanded(!expanded)}
+                expanded={expanded}
+                close={() => setOpen(false)}
+            />
             <div id={'content'} className={'relative h-full '}>
                 <Outlet/>
             </div>
             <div id={'footer'}></div>
+        </div>
+    }
+    return (
+        <div onClick={()=> setOpen(true)} className={'bg-accent-900 hover:cursor-pointer transition-all rounded-full h-14 w-14 flex items-center justify-center fixed right-0 bottom-0 m-8'}>
+           <AssistantIcon width={35} height={35} fill={'white'} /> 
         </div>
     );
 }

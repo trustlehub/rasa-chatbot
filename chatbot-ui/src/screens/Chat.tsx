@@ -4,6 +4,9 @@ import MessageContainer from "../components/MessageContainer";
 type Message = {
     from: 'bot' | "user";
     message: string
+    buttons?: string[],
+    imageUrl?: string
+
 }
 
 function Chat() {
@@ -11,7 +14,14 @@ function Chat() {
     const [messages, setMessages] = useState<Message[]>([
         {
             message: "Testing message",
-            from: 'bot'
+            from: 'bot',
+            imageUrl: "https://picsum.photos/200",
+            buttons: [
+                "Test 1",
+                "Test 2",
+                "Test 3",
+                "Test 4",
+            ]
         },
         {
             message: "Testing message",
@@ -23,7 +33,14 @@ function Chat() {
         },
         {
             message: "Testing message",
-            from: 'user'
+            from: 'bot',
+            imageUrl: "https://picsum.photos/200/200",
+            buttons: [
+                "Test 1",
+                "Test 2",
+                "Test 3",
+                "Test 4",
+            ]
         },
         {
             message: "Testing message",
@@ -55,7 +72,7 @@ function Chat() {
         },
         {
             message: "Testing message",
-            from: 'bot'
+            from: 'bot',
         },
         {
             message: "Testing message",
@@ -104,7 +121,8 @@ function Chat() {
                     {messages.map((msg, index) => (
                         <MessageContainer
                             displayLabel={setDisplayLabel(messages, index)}
-                            key={index} content={msg.message} from={msg.from}/>
+                            key={index} buttons={msg.buttons && msg.buttons} imageUrl={msg.imageUrl && msg.imageUrl}
+                            content={msg.message} from={msg.from}/>
                     ))}
                 </div>
             </div>
