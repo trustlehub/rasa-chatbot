@@ -1,12 +1,21 @@
-import TreeIcon from "../icons/Tree";
 import ArrowRight from "../icons/ArrowRight";
 import {useNavigate} from "react-router-dom";
+import {ChatContext, ChatType} from "./ChatContext";
+import {useContext} from "react";
 
-function IntentHeaders({icon, text}: { icon: any, text: string }) {
+function IntentHeaders({icon, text, chatType}: { icon: any, text: string, chatType: ChatType['type'] }) {
+
+    const chatContext = useContext(ChatContext);
+    const {
+        setIntent
+    } = chatContext;
     const navigate = useNavigate();
     return <div
         className={'bg-white rounded-md py-1 hover:cursor-pointer hover:bg-neutral-50 px-6 border-2 border-gray-200 flex w-full items-center flex-row'}
-        onClick={()=>navigate('/chat')}
+        onClick={() => {
+            setIntent(chatType)
+            navigate('/chat')
+        }}
     >
         {icon}
         <span className={'whitespace-nowrap ml-3'}>{text}</span>

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import IntentSelection from "./screens/IntentSelection";
 import Chat from "./screens/Chat";
+import {ChatProvider} from "./components/ChatContext";
 
 const router = createMemoryRouter(
     [
@@ -20,12 +21,14 @@ const router = createMemoryRouter(
                 element: <div>Hi from test</div>
             },
                 {
-                    path:'',
+                    path: '',
                     element: <IntentSelection/>
                 },
                 {
-                    path:'/chat',
-                    element: <Chat/>
+                    path: '/chat',
+                    element:
+                        <Chat/>
+
                 }
             ]
         },
@@ -33,7 +36,9 @@ const router = createMemoryRouter(
 )
 const root = ReactDOM.createRoot(document.getElementById('Chatbot'));
 root.render(
-    <RouterProvider router={router}/>
+    <ChatProvider>
+        <RouterProvider router={router}/>
+    </ChatProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

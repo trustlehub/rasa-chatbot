@@ -29,7 +29,7 @@ function App() {
                 expanded={expanded}
                 close={() => setOpen(false)}
             />
-            <div id={'content'} className={'relative h-full '}>
+            <div id={'content'} className={'relative h-full overflow-hidden'}>
                 <Outlet/>
             </div>
             <div id={'footer'}></div>

@@ -21,7 +21,7 @@ function Header(
 
     const location = useLocation();
     const navigate = useNavigate();
-    return <div id={'header'} className={'min-h-16 bg-accent-900 flex justify-between items-center px-5'}>
+    return <div id={'header'} className={'min-h-16 h-16 bg-accent-900 flex justify-between items-center px-5'}>
         {location.pathname === '/' && <div className={'flex items-center justify-center'}>
             <RobotIcon width={30} height={30} fill={'white'}/>
             <div className={'px-3 text-white'}>
