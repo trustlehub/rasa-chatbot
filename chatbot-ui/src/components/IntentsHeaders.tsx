@@ -1,7 +1,8 @@
 import ArrowRight from "../icons/ArrowRight";
 import {useNavigate} from "react-router-dom";
-import {ChatContext, ChatType} from "./ChatContext";
+import {ChatContext} from "./ChatContext";
 import {useContext} from "react";
+import {ChatType} from "../types";
 
 function IntentHeaders({icon, text, chatType}: { icon: any, text: string, chatType: ChatType['type'] }) {
 

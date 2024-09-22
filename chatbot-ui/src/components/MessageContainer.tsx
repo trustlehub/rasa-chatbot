@@ -1,15 +1,24 @@
 import AvatarManIcon from "../icons/AvatarMan";
 import RobotIcon from "../icons/Robot";
+import {Link} from "react-router-dom";
+import {Message} from "../types";
 
 type MessageContainerType = {
-    content: string;
+    content: string | undefined;
     from: "user" | "bot"
-    displayLabel: boolean,
-    imageUrl?: string,
-    buttons?: string[]
+    displayLabel: boolean
+    imageUrl?: string
+    buttons?: {
+        name: string
+        source: string
+    }[]
+    name?: string
+    about?: string
+    type: Message['type']
+    audioUrl?: string
 }
 
-function MessageContainer({from, content, displayLabel, imageUrl, buttons}: MessageContainerType) {
+function MessageContainer({from, type, content, displayLabel, imageUrl, buttons, about, name, audioUrl}: MessageContainerType) {
     return <div className={"w-full"}>
         <div id={"user"} className={`flex ${displayLabel ? 'mb-3' : "mb-1"}`}>
             {displayLabel &&
@@ -20,19 +29,30 @@ function MessageContainer({from, content, displayLabel, imageUrl, buttons}: Mess
             }
         </div>
         <div id={"content"}
-             className={`${from === "bot" ? "bg-neutral-200" : "bg-accent-100"} rounded-md p-3 flex flex-col`}>
-            
-            <div id={'contentHolder'} className={'flex flex-wrap'}>
+             className={`${from === "bot" ? type === 'sr' ? "border-2 border-neutral-100" : "bg-neutral-200" : "bg-accent-100"} rounded-md p-3 flex flex-col`}>
+
+            <div id={'contentHolder'} className={'flex flex-wrap '}>
                 {imageUrl &&
-                    <img src={imageUrl} className={'rounded-md m-2'} alt={"message image"}/>
+                    <img src={imageUrl} className={'mb-2 '} alt={"message image"}/>
                 }
-                <div className={''}>{content}</div>
+                <div className={''}>
+                    <div className={'font-bold text-xl'}>{name}</div>
+                    <div>{about}</div>
+                    <div>{content}</div>
+                </div>
+                {audioUrl && <audio controls src={audioUrl}/>}
+
             </div>
-            <div id={'buttonholder'} className={'flex flex-wrap mt-5 mb-2'}>
-                {buttons && buttons.map(button => (
-                    <div className={'bg-accent-100 text-accent-900 border-2 border-accent-900 rounded-full px-3 py-1 mx-2 hover:border-[3px] hover:cursor-pointer'}>{button}</div> 
-                ))}
-            </div>
+
+            {buttons && (
+                <div id={'buttonholder'} className={'flex flex-wrap mt-5 mb-2'}>
+                    {buttons.map(button => (
+                        <div
+                            className={'bg-accent-100 text-accent-900 border-2 border-accent-900 rounded-full px-3 py-1 mx-2 hover:border-[3px] hover:cursor-pointer'}>{button.name}
+                        </div>
+                    ))}
+                </div>
+            )}
 
         </div>
     </div>

@@ -1,32 +1,6 @@
-import React, {createContext, useState, useEffect, ReactNode} from 'react';
+import React, {createContext, ReactNode, useEffect, useState} from 'react';
 import {useReactMediaRecorder} from 'react-media-recorder';
-
-interface Message {
-    message: string;
-    from: 'bot' | 'user';
-    imageUrl?: string;
-    buttons?: string[];
-}
-
-export interface ChatType {
-    type: "elderly_care_services" | "general_chat"
-}
-
-interface ChatContextType {
-    voiceInputActive: boolean;
-    messages: Message[];
-    input: string;
-    setInput: React.Dispatch<React.SetStateAction<string>>;
-    setIntent: React.Dispatch<React.SetStateAction<ChatType['type']>>;
-    sendMessage: () => Promise<void>;
-    getGreeting: () => Promise<void>;
-    setDisplayLabel: (msgs: Message[], index: number) => boolean;
-    status: string;
-    sendRecording: () => void;
-    cancelRecording: () => void;
-    startChat: () => Promise<void>;
-    clearChatHistory: () => void
-}
+import {ChatContextType, ChatResponse, ChatType, Message} from "../types";
 
 const defaultContext: ChatContextType = {
     cancelRecording: () => {
@@ -40,21 +14,44 @@ const defaultContext: ChatContextType = {
     input: '',
     setInput: () => {
     },
-    setIntent: () => {},
-    sendMessage: async () => {
+    setIntent: () => {
     },
-    getGreeting: async () => {
+    sendMessage: async () => {
     },
     setDisplayLabel: () => true,
     status: 'idle',
-    clearChatHistory: () => {}
+    clearChatHistory: () => {
+    },
+    sendVoiceMessage: async () => {}
 };
 export const ChatContext = createContext<ChatContextType>(defaultContext);
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
     const [voiceInputActive, setVoiceInputActive] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
-
+        {
+            name: "Villa Båthöjden",
+            source: "https://www.vardaga.se/verksamheter/villa-bathojden",
+            about: "Villa Båthöjden i Nacka kommun är en aktiv och händelserik plats. Här finns en stor samvarolokal och dessutom finns andra rum för aktivitet inomhus, utomhus och ett spa-rum.\r\n\r\nLokalernas ljus- och färgsättning är planerad för att underlätta vardagen för personer med demenssjukdom. Med hjälp av ljus- och färgsättning kan vi underlätta för den enskilde att hitta till sin bostad, matplatsen och andra platser på boendet.\r\n\r\nHos oss kan par bo i samma hus och få den specifika vård och omsorg de behöver. Vi har lyckade exempel där ena parten bor på demensenhet och den andra på en enhet för omvårdnad. Husdjur är också välkomna att bo här och för en avgift sköter vi om dem.",
+            imageUrl: "https://db.vardaga.se/wp-content/uploads/2019/01/Båthöjden-båtar-scaled.jpg",
+            type: 'sr',
+            from: 'bot',
+            buttons: [
+                {
+                    name: "Visit",
+                    source: '#'
+                },
+                {
+                    name: "Book",
+                    source: "#"
+                }
+            ]
+        },
+        {
+            message: 'Hi',
+            type: 'msg',
+            from: 'bot'
+        },
     ]);
     const [input, setInput] = useState<string>("");
     const [audioBlob, setAudioBlob] = useState<Blob>();
@@ -69,7 +66,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
             },
         });
 
-    const _getEndpoint: (type: "refresh" | "start" | "chat") => string = (type) => {
+    const _getEndpoint: (type: "refresh" | "start" | "chat" | "speech2text" | "voice") => string = (type) => {
 
         let endpointType = ""
         const chatBackendBaseUrl = process.env.REACT_APP_CHAT_BASEURL;
@@ -92,28 +89,26 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
                 return `${endpointType}/refresh`
             case "start":
                 return `${endpointType}`
+            case "speech2text":
+                return `${chatBackendBaseUrl}/test/speech2text`
+            case "voice":
+                return `${endpointType}/chat_voice`
             default:
                 return `${endpointType}`
         }
         return endpointType
     }
     const startChat = async () => {
-        const endpoint = await _getEndpoint("start");
+        const endpoint = _getEndpoint("start");
         const response = await fetch(endpoint)
         const j = await response.json()
         setSessionId(j['_uuid'])
-    }
-    
-    const clearChatHistory = () => {
-        setMessages([])
-    }
-    const getGreeting = async () => {
-        const finalEndpoint = await _getEndpoint("chat");
-        if (finalEndpoint) {
+        const finalEndpoint = _getEndpoint("chat");
+        if (finalEndpoint && j['_uuid']) {
             const r = await fetch(`${finalEndpoint}`, {
                 method: 'POST',
                 body: JSON.stringify({
-                    session_id: sessionId,
+                    session_id: j['_uuid'],
                     question: "Hi"
                 }),
                 headers: {
@@ -121,19 +116,27 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
                 }
             });
 
-            const text: string = await r.json();
-            setMessages((prevMessages) => [...prevMessages, {
-                from: 'bot',
-                message: text
-            }]);
+            const response: ChatResponse = await r.json();
+            if (response.type == "msg") {
+                setMessages((prevMessages) => [...prevMessages, {
+                    from: 'bot',
+                    message: response.answer || "",
+                    type: "msg"
+                }]);
+            }
         }
+    }
+
+    const clearChatHistory = () => {
+        setMessages([])
     }
     const sendMessage = async () => {
         const finalEndpoint = await _getEndpoint("chat");
         if (finalEndpoint) {
             setMessages((prevMessages) => [...prevMessages, {
                 from: 'user',
-                message: input
+                message: input,
+                type: 'msg'
             }]);
             setInput("");
             const r = await fetch(`${finalEndpoint}`, {
@@ -147,11 +150,34 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
                 }
             });
 
-            const text: string = await r.json();
-            setMessages((prevMessages) => [...prevMessages, {
-                from: 'bot',
-                message: text
-            }]);
+            const chatData: ChatResponse = await r.json();
+            if (chatData.type == "sr") {
+                chatData.sr_list.forEach((service) => {
+                    setMessages((prevMessages) => [...prevMessages, {
+                        from: 'bot',
+                        name: service.name,
+                        about: service.about,
+                        imageUrl: service.image,
+                        type: 'sr',
+                        buttons: [
+                            {
+                                name: "Visit",
+                                source: service.source
+                            },
+                            {
+                                name: "Book",
+                                source: "#"
+                            }
+                        ]
+                    }]);
+                })
+            } else {
+                setMessages((prevMessages) => [...prevMessages, {
+                    from: 'bot',
+                    message: chatData.answer || "",
+                    type: 'msg'
+                }])
+            }
         }
     };
 
@@ -171,11 +197,12 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
         setShouldSend(true)
     }
     // For sending recorded voice to backend
-    const sendVoice = async () => {
+    const sendVoiceForSpeech2Text = async () => {
         if (audioBlob) {
+            const endpoint = _getEndpoint("speech2text")
             const formData = new FormData();
             formData.append('file', audioBlob, 'audio.wav');
-            const r = await fetch("http://localhost:8000/speech2text", {
+            const r = await fetch(endpoint, {
                 method: "POST",
                 body: formData
             });
@@ -184,10 +211,40 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
             setVoiceInputActive(!voiceInputActive);
         }
     };
+    
+    const sendVoiceMessage = async () => {
+        const finalEndpoint = _getEndpoint("voice");
+        if (finalEndpoint) {
+            setMessages((prevMessages) => [...prevMessages, {
+                from: 'user',
+                message: input,
+                type: 'msg'
+            }]);
+            setInput("");
+            const response = await fetch(`${finalEndpoint}`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    question: input
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const blob = await response.blob()
+            setMessages((prevMessages) => [...prevMessages, {
+                from: 'bot',
+                audioUrl: URL.createObjectURL(blob),
+                type: 'voice'
+            }]);
+
+            
+        }
+    }
 
     useEffect(() => {
         if (shouldSend && status === "stopped") {
-            sendVoice();
+            sendVoiceForSpeech2Text();
             setShouldSend(false);
         }
     }, [status]);
@@ -207,7 +264,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
                 startChat,
                 setIntent,
                 clearChatHistory,
-                getGreeting
+                sendVoiceMessage
             }}
         >
             {children}

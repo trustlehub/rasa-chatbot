@@ -16,7 +16,7 @@ function IntentSelection() {
             } text={"Find elderly care"} chatType={'elderly_care_services'}/>
             <IntentHeaders icon={
                 <BookIcon width={60} height={60} className={'mr-3'}/>
-            } text={"Seeking care for elderly"} chatType={'elderly_care_services'}/>
+            } text={"Apply services"} chatType={'apply_chat'}/>
             <IntentHeaders icon={
                 <ChatIcon width={60} height={60} className={'mr-3'}/>
             } text={"Find person or business"} chatType={'general_chat'}/>

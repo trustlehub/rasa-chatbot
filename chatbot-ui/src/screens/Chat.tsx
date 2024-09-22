@@ -12,11 +12,12 @@ function Chat() {
     const [timeElapsed, setTimeElapsed] = useState(0);
     const [timer, setTimer] = useState<NodeJS.Timeout>();
     const scrollContainer = useRef<HTMLDivElement | null>(null);
-
+    const [nextIsVoice, setNextIsVoice] = useState(false)
     const {
         messages, input, setInput, sendMessage, status
         , setDisplayLabel, voiceInputActive,
-        cancelRecording, sendRecording, startChat, clearChatHistory, getGreeting
+        cancelRecording, sendRecording, startChat, clearChatHistory,
+        sendVoiceMessage
     } = chatContext;
 
     // timers for voice recording
@@ -33,7 +34,7 @@ function Chat() {
     };
 
     useEffect(() => {
-        startChat().then(()=> getGreeting())
+        startChat()
         return clearChatHistory
     }, []);
     useEffect(() => {
@@ -48,8 +49,10 @@ function Chat() {
                     {messages.map((msg, index) => (
                         <MessageContainer
                             displayLabel={setDisplayLabel(messages, index)}
-                            key={index} buttons={msg.buttons && msg.buttons} imageUrl={msg.imageUrl && msg.imageUrl}
-                            content={msg.message} from={msg.from}/>
+                            key={index} buttons={msg.buttons} imageUrl={msg.imageUrl && msg.imageUrl}
+                            content={msg.message} from={msg.from} type={msg.type} name={msg.name} about={msg.about}
+                            audioUrl={msg.audioUrl}
+                        />
                     ))}
                 </div>
             </div>
@@ -60,7 +63,16 @@ function Chat() {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                        onKeyDown={async (e) => {
+                            if (e.key === 'Enter') {
+                                if (!nextIsVoice) {
+                                    await sendMessage()
+                                } else {
+                                    await sendVoiceMessage();
+                                    setNextIsVoice(false)
+                                }
+                            }
+                        }}
                         className="w-full bg-transparent focus:outline-none focus:ring-0 "
                         placeholder="Type a message..."
                     />) : (<div>
@@ -82,6 +94,7 @@ function Chat() {
                     <div onClick={() => {
                         sendRecording()
                         stopTimer()
+                        setNextIsVoice(true)
                     }}
                          className={`p-2 hover:cursor-pointer transition-all rounded-full bg-accent-900 hover:scale-105`}>
                         <Send height={25} width={25} fill={`${voiceInputActive && "#fff"}`}/>
