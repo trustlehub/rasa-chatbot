@@ -64,19 +64,18 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
         }
         switch (type) {
             case "chat":
-                return `${endpointType}/chat_text`
+                return `${endpointType}/chat_text/`
             case "refresh":
-                return `${endpointType}/refresh`
+                return `${endpointType}/refresh/`
             case "start":
-                return `${endpointType}`
+                return `${endpointType}/`
             case "speech2text":
-                return `${chatBackendBaseUrl}/test/speech2text`
+                return `${chatBackendBaseUrl}/test/speech2text/`
             case "voice":
-                return `${endpointType}/chat_voice`
+                return `${endpointType}/chat_voice/`
             default:
-                return `${endpointType}`
+                return `${endpointType}/`
         }
-        return endpointType
     }
     const startChat = async () => {
         const endpoint = _getEndpoint("start");
