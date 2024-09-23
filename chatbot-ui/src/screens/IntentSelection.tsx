@@ -22,7 +22,7 @@ function IntentSelection() {
             } text={"Find person or business"} chatType={'general_chat'}/>
             <IntentHeaders icon={
                 <LeafIcon width={40} height={60} className={'mr-3'}/>
-            } text={"Other"} chatType={'general_chat'}/>
+            } text={"General Inquiry"} chatType={'general_chat'}/>
         </div>
     </div>
 }
