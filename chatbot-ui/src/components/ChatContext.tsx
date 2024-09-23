@@ -29,29 +29,6 @@ export const ChatContext = createContext<ChatContextType>(defaultContext);
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
     const [voiceInputActive, setVoiceInputActive] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
-        {
-            name: "Villa Båthöjden",
-            source: "https://www.vardaga.se/verksamheter/villa-bathojden",
-            about: "Villa Båthöjden i Nacka kommun är en aktiv och händelserik plats. Här finns en stor samvarolokal och dessutom finns andra rum för aktivitet inomhus, utomhus och ett spa-rum.\r\n\r\nLokalernas ljus- och färgsättning är planerad för att underlätta vardagen för personer med demenssjukdom. Med hjälp av ljus- och färgsättning kan vi underlätta för den enskilde att hitta till sin bostad, matplatsen och andra platser på boendet.\r\n\r\nHos oss kan par bo i samma hus och få den specifika vård och omsorg de behöver. Vi har lyckade exempel där ena parten bor på demensenhet och den andra på en enhet för omvårdnad. Husdjur är också välkomna att bo här och för en avgift sköter vi om dem.",
-            imageUrl: "https://db.vardaga.se/wp-content/uploads/2019/01/Båthöjden-båtar-scaled.jpg",
-            type: 'sr',
-            from: 'bot',
-            buttons: [
-                {
-                    name: "Visit",
-                    source: '#'
-                },
-                {
-                    name: "Book",
-                    source: "#"
-                }
-            ]
-        },
-        {
-            message: 'Hi',
-            type: 'msg',
-            from: 'bot'
-        },
     ]);
     const [input, setInput] = useState<string>("");
     const [audioBlob, setAudioBlob] = useState<Blob>();
