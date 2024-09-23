@@ -55,6 +55,9 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
             case "general_chat":
                 endpointType = `${chatBackendBaseUrl}/general_chat`
                 break;
+            case "apply_chat":
+                endpointType = `${chatBackendBaseUrl}/apply_chat`
+                break;
             default:
                 endpointType = `${chatBackendBaseUrl}/general_chat`
                 break;
