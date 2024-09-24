@@ -22,7 +22,8 @@ const defaultContext: ChatContextType = {
     status: 'idle',
     clearChatHistory: () => {
     },
-    sendVoiceMessage: async () => {}
+    sendVoiceMessage: async () => {},
+    intent: "general_chat"
 };
 export const ChatContext = createContext<ChatContextType>(defaultContext);
 
@@ -97,11 +98,13 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
 
             const response: ChatResponse = await r.json();
             if (response.type == "msg") {
-                setMessages((prevMessages) => [...prevMessages, {
-                    from: 'bot',
-                    message: response.answer || "",
-                    type: "msg"
-                }]);
+                setMessages([
+                    {
+                        from: 'bot',
+                        message: response.answer || "",
+                        type: "msg"
+                    }
+                ]) 
             }
         }
     }
@@ -233,6 +236,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({children}) => {
             value={{
                 messages,
                 input,
+                intent,
                 setInput,
                 sendMessage,
                 status,

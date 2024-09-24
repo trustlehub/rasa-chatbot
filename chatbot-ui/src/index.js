@@ -4,7 +4,7 @@ import './index.css';
 import App from "./App";
 import reportWebVitals from './reportWebVitals';
 import {
-    createBrowserRouter, createMemoryRouter,
+    createMemoryRouter,
     RouterProvider,
 } from "react-router-dom";
 import IntentSelection from "./screens/IntentSelection";
@@ -16,10 +16,7 @@ const router = createMemoryRouter(
         {
             path: '/',
             element: <App/>,
-            children: [{
-                path: '/test',
-                element: <div>Hi from test</div>
-            },
+            children: [
                 {
                     path: '',
                     element: <IntentSelection/>
@@ -28,7 +25,6 @@ const router = createMemoryRouter(
                     path: '/chat',
                     element:
                         <Chat/>
-
                 }
             ]
         },

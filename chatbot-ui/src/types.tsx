@@ -40,6 +40,7 @@ export interface ChatContextType {
     input: string;
     setInput: React.Dispatch<React.SetStateAction<string>>;
     setIntent: React.Dispatch<React.SetStateAction<ChatType['type']>>;
+    intent: ChatType['type'];
     sendMessage: () => Promise<void>;
     setDisplayLabel: (msgs: Message[], index: number) => boolean;
     status: string;
@@ -48,4 +49,5 @@ export interface ChatContextType {
     startChat: () => Promise<void>;
     clearChatHistory: () => void;
     sendVoiceMessage: () => Promise<void>;
+    
 }
